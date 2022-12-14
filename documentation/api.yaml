@@ -1,0 +1,414 @@
+swagger: 2.0
+openapi: 3.0.0
+info:
+  title: Blog API
+  version: 1.0.0
+  description: a REST API for a blog site
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+components:
+  schemas:
+    BlogPost:
+      type: object
+      required:
+        - blogPost
+      properties:
+        blogPost:
+          type: object
+          required:
+            - slug
+            - title
+            - description
+            - body
+          properties:
+            slug:
+              type: string
+              description: URL friendly version of the title that acts like a ID for the post
+            title:
+              type: string
+              description: Title of the blog post
+            description:
+              type: string
+              description: Short description of the blog post
+            body:
+              type: string
+              description: Body of the blog post
+            tagList:
+              type: Array
+              description: Array containing all the tags associated with the post
+            createdAt:
+              type: string
+              description: Timestamp of the moment the blog post was created
+            updatedAt:
+              type: string
+              description: Timestamp of the moment the blog post was last updated
+      example:
+        blogPost:
+          slug: augmented-reality-ios-application
+          title: Augmented Reality iOS Application
+          description: Rubicon Software Development and Gazzda furniture are proud to launch an augmented reality app.
+          body: The app is simple to use, and will help you decide on your best furniture fit.
+          tagList: ["IOS", "AR"]
+          createdAt: 2018-05-18T03:22:56.637Z
+          updatedAt: 2018-05-18T03:48:35.824Z
+    BlogPosts:
+      type: object
+      required:
+        - blogPosts
+        - postsCount
+      properties:
+        blogPosts:
+          type: Array
+          items:
+            $ref: "#/components/schemas/BlogPost"
+          description: Array of blog posts
+        postsCount:
+          type: number
+          description: Number of blog posts inside the array
+      example:
+        blogPosts:
+          - slug: augmented-reality-ios-application
+            title: Augmented Reality iOS Application
+            description: Rubicon Software Development and Gazzda furniture are proud to launch an augmented reality app.
+            body: The app is simple to use, and will help you decide on your best furniture fit.
+            tagList: [IOS, AR]
+            createdAt: 2018-05-18T03:22:56.637Z
+            updatedAt: 2018-05-18T03:48:35.824Z
+          - slug: augmented-reality-ios-application-2
+            title: Augmented Reality iOS Application 2
+            description:
+              Rubicon Software Development and Gazzda furniture are proud to launch an augmented reality app.
+            body: The app is simple to use, and will help you decide on your best furniture fit.
+            tagList: [iOS, AR, Gazzda]
+            createdAt: "2018-04-18T03:22:56.637Z"
+            updatedAt: "2018-04-18T03:48:35.824Z"
+        postsCount: 2
+    AddBlogPost:
+      type: object
+      required:
+        - blogPost
+      properties:
+        blogPost:
+          type: object
+          required:
+            - title
+            - description
+            - body
+          properties:
+            title:
+              type: string
+              description: Title of the blog post
+            description:
+              type: string
+              description: Short description of the blog post
+            body:
+              type: string
+              description: Body of the blog post
+            tagList:
+              type: Array
+              description: Array containing all the tags associated with the post
+      example:
+        blogPost:
+          title: Augmented Reality iOS Application
+          description: Rubicon Software Development and Gazzda furniture are proud to launch an augmented reality app.
+          body: The app is simple to use, and will help you decide on your best furniture fit.
+          tagList: ["IOS", "AR"]
+    UpdateBlogPost:
+      type: object
+      required:
+        - blogPost
+      properties:
+        blogPost:
+          type: object
+          properties:
+            title:
+              type: string
+              description: Title of the blog post
+            description:
+              type: string
+              description: Short description of the blog post
+            body:
+              type: string
+              description: Body of the blog post
+      example:
+        blogPost:
+          title: Augmented Reality iOS Application
+          description: Rubicon Software Development and Gazzda furniture are proud to launch an augmented reality app.
+          body: The app is simple to use, and will help you decide on your best furniture fit.
+    ListOfTags:
+      type: object
+      required:
+        - tags
+      properties:
+        tags:
+          type: Array
+          items: string
+          description: Array containing all the tags stored in the database
+      example:
+        tags: [IOS, Android, Google, PHP]
+    Comment:
+      type: object
+      required:
+        - comment
+      properties:
+        comment:
+          type: object
+          required:
+            - id
+            - createdAt
+            - updatedAt
+            - body
+          properties:
+            id:
+              type: integer
+              description: Unique identifier of the comment
+            createdAt:
+              type: string
+              description: Timestamp of the moment the blog post was created
+            updatedAt:
+              type: string
+              description: Timestamp of the moment the blog post was last updated
+            body:
+              type: string
+              description: Content of the comment
+      example:
+        comment:
+          id: 1
+          createdAt: "2018-04-18T03:22:56.637Z"
+          updatedAt: "2018-04-18T03:22:56.637Z"
+          body: Great blog.
+    Comments:
+      type: object
+      required:
+        - comments
+      properties:
+        comments:
+          type: Array
+          items:
+            $ref: "#/components/schemas/Comment"
+          description: Array of comments made on a blog post
+      example:
+        comments:
+          - id: 1
+            createdAt: "2018-04-18T03:22:56.637Z"
+            updatedAt: "2018-04-18T03:22:56.637Z"
+            body: Great blog.
+    AddComment:
+      type: object
+      required:
+        - comment
+      properties:
+        comment:
+          type: object
+          required:
+            - body
+          properties:
+            body:
+              type: string
+              description: Content of the comment
+      example:
+        comment:
+          body: Nice explanation.
+
+tags:
+  - name: BlogPosts
+    description: The blog posts managing API
+  - name: Tags
+    description: Tags used to filter out blog posts
+  - name: Comments
+    description: Comments on different blog posts
+
+paths:
+  /api/posts/{slug}:
+    get:
+      summary: Will return a single blog post
+      tags: [BlogPosts]
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+          description: The blog post unique identifier
+      responses:
+        200:
+          description: A single blog post
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlogPost"
+        500:
+          description: Database or server error
+    put:
+      summary: Updates a blog post
+      tags: [BlogPosts]
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+          description: The blog post unique identifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBlogPost"
+      responses:
+        200:
+          description: The updated blog post
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlogPost"
+        409:
+          description: A blog post with the same title already exists
+        500:
+          description: Database or server error
+    delete:
+      summary: Deletes a single blog post
+      tags: [BlogPosts]
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+          description: The blog post unique identifier
+      responses:
+        200:
+          description: Blog post successfully deleted
+        500:
+          description: Database or server error
+  /api/posts:
+    get:
+      summary: Will return a list of blog posts
+      tags: [BlogPosts]
+      parameters:
+        - in: query
+          name: tag
+          schema:
+            type: string
+          required: false
+          description: Query string parameter that filters blog posts by tag
+      responses:
+        200:
+          description: A list of blog posts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPosts"
+        500:
+          description: Database or server error
+    post:
+      summary: Adds a new blog post to the database
+      tags: [BlogPosts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddBlogPost"
+      responses:
+        200:
+          description: Returns the saved blog post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlogPost"
+        400:
+          description: Missing a required field
+        409:
+          description: A blog post with the same title already exists
+        500:
+          description: Database or server error
+  /api/tags:
+    get:
+      summary: Will return a list of all tags saved in the system
+      tags: [Tags]
+      responses:
+        200:
+          description: Returns an array containing all the tags stored in the database
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfTags"
+        500:
+          description: Database or server error
+  /api/posts/{slug}/comments:
+    post:
+      summary: Creates a comment on a blog posts
+      tags: [Comments]
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+          description: The blog post unique identifier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddComment"
+      responses:
+        200:
+          description: Returns the comment that was created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        404:
+          description: Blog post the comment is reffering to does not exist
+        400:
+          description: Missing comment body
+        500:
+          description: Database or server error
+    get:
+      summary: Returns a list of comments related to a specific blog post
+      tags: [Comments]
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+          description: The blog post unique identifier
+      responses:
+        200:
+          description: Returns a list of comments related to a specific blog post
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comments"
+        500:
+          description: Database or server error
+  /api/posts/{slug}/comments/{id}:
+    delete:
+      summary: Deletes a comment with a matching unique identifier
+      tags: [Comments]
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+          description: The blog post unique identifier
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        200:
+          description: Comment successfully deleted
+        500:
+          description: Database or server error
