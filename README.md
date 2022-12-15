@@ -1,13 +1,13 @@
 # Blog site REST API
 
 A REST API that can be used for a simple blogging platform. Created using Node.js and Express.js.\
-Uses a Cloud based PostgreSQL database hosted on [ElephantSQL](https://www.elephantsql.com/), no further database configuration is required.\
+Uses a Cloud based PostgreSQL database hosted on [ElephantSQL](https://www.elephantsql.com/), no further database configuration is required.
 
 To install all the necessary dependencties run **npm install** in the root project directory 
 
 ## Available scripts
 
-In this project directory, you can run:
+In this project directory you can run:
 
 ### `npm start`
 
